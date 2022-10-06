@@ -1,0 +1,41 @@
+{
+  "name": "@visx/gradient",
+  "version": "1.0.0",
+  "description": "visx gradient",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "esm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/airbnb/visx.git"
+  },
+  "keywords": [
+    "visx",
+    "react",
+    "d3",
+    "visualizations",
+    "charts"
+  ],
+  "author": "@hshoff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/airbnb/visx/issues"
+  },
+  "homepage": "https://github.com/airbnb/visx#readme",
+  "dependencies": {
+    "@types/react": "*",
+    "prop-types": "^15.5.7"
+  },
+  "peerDependencies": {
+    "react": "^15.0.0-0 || ^16.0.0-0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "598445514c93f22b1b7c399efa894b0778fd6ca6"
+}

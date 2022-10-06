@@ -1,0 +1,5 @@
+import { ValueMapping } from '../types';
+declare type TimeSeriesValue = string | number | null;
+export declare const getMappedValue: (valueMappings: ValueMapping[], value: TimeSeriesValue) => ValueMapping;
+export declare function isNumeric(num: any): boolean;
+export {};

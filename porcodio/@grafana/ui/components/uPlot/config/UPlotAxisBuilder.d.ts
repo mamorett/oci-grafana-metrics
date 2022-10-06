@@ -1,0 +1,25 @@
+import { GrafanaTheme, TimeZone } from '@grafana/data';
+import { Axis } from 'uplot';
+import { PlotConfigBuilder } from '../types';
+import { AxisPlacement } from '../config';
+export interface AxisProps {
+    scaleKey: string;
+    theme: GrafanaTheme;
+    label?: string;
+    show?: boolean;
+    size?: number | null;
+    gap?: number;
+    placement?: AxisPlacement;
+    grid?: boolean;
+    ticks?: boolean;
+    formatValue?: (v: any) => string;
+    splits?: Axis.Splits;
+    values?: any;
+    isTime?: boolean;
+    timeZone?: TimeZone;
+}
+export declare class UPlotAxisBuilder extends PlotConfigBuilder<AxisProps, Axis> {
+    merge(props: AxisProps): void;
+    getConfig(): Axis;
+}
+export declare function getUPlotSideFromAxis(axis: AxisPlacement): 0 | 3 | 1 | 2;

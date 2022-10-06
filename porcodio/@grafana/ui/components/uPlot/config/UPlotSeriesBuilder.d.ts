@@ -1,0 +1,49 @@
+import { DataFrameFieldIndex, FieldColorMode, GrafanaTheme, ThresholdsConfig } from '@grafana/data';
+import uPlot, { Series } from 'uplot';
+import { BarConfig, DrawStyle, FillConfig, GraphGradientMode, LineConfig, PointsConfig } from '../config';
+import { PlotConfigBuilder } from '../types';
+export interface SeriesProps extends LineConfig, BarConfig, FillConfig, PointsConfig {
+    scaleKey: string;
+    pxAlign?: boolean;
+    gradientMode?: GraphGradientMode;
+    /** Used when gradientMode is set to Scheme */
+    thresholds?: ThresholdsConfig;
+    /** Used when gradientMode is set to Scheme  */
+    colorMode?: FieldColorMode;
+    fieldName: string;
+    drawStyle?: DrawStyle;
+    pathBuilder?: Series.PathBuilder;
+    pointsBuilder?: Series.Points.Show;
+    show?: boolean;
+    dataFrameFieldIndex?: DataFrameFieldIndex;
+    hideInLegend?: boolean;
+    theme: GrafanaTheme;
+}
+export declare class UPlotSeriesBuilder extends PlotConfigBuilder<SeriesProps, Series> {
+    getConfig(): {
+        show: boolean;
+        class?: string | undefined;
+        scale: string;
+        auto?: boolean | undefined;
+        sorted?: Series.Sorted | undefined;
+        spanGaps: boolean | undefined;
+        pxAlign: number | boolean | undefined;
+        label?: string | undefined;
+        value?: string | ((self: uPlot, rawValue: number, seriesIdx: number, idx: number) => string | number) | undefined;
+        values?: Series.Values | undefined;
+        paths?: Series.PathBuilder | undefined;
+        points?: Series.Points | undefined;
+        width?: number | undefined;
+        stroke?: string | CanvasGradient | CanvasPattern | ((self: uPlot, seriesIdx: number) => string | CanvasGradient | CanvasPattern) | undefined;
+        fill: string | CanvasGradient | CanvasPattern | ((self: uPlot, seriesIdx: number) => string | CanvasGradient | CanvasPattern) | undefined;
+        fillTo?: number | ((self: uPlot, seriesIdx: number, dataMin: number, dataMax: number) => number) | undefined;
+        dash?: number[] | undefined;
+        cap?: "round" | "butt" | "square" | undefined;
+        alpha?: number | undefined;
+        idxs?: Series.MinMaxIdxs | undefined;
+        min?: number | undefined;
+        max?: number | undefined;
+    };
+    private getLineColor;
+    private getFill;
+}

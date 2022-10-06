@@ -1,0 +1,35 @@
+{
+  "name": "prunk",
+  "version": "1.3.1",
+  "description": "A mocking utility for node.js require",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "docs": "docco -o . index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dak0rn/prunk.git"
+  },
+  "keywords": [
+    "node",
+    "mock",
+    "mocking",
+    "require",
+    "test",
+    "tests",
+    "coverage"
+  ],
+  "author": "Daniel Koch <daniel@suitsoft.eu>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dak0rn/prunk/issues"
+  },
+  "homepage": "https://github.com/dak0rn/prunk#readme",
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "chai-spies": "^0.7.1",
+    "docco": "^0.7.0",
+    "mocha": "^3.5.0"
+  }
+}
