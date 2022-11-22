@@ -10,7 +10,7 @@ import {
   resourcegroupsQueryRegex,
   metricsQueryRegex,
   regionsQueryRegex,
-  tenancyconfigQueryRegex,
+  tenanciesQueryRegex,
   compartmentsQueryRegex,
   dimensionKeysQueryRegex,
   dimensionValuesQueryRegex,
@@ -37,7 +37,7 @@ export class OCIDatasourceQueryCtrl extends QueryCtrl {
     this.uiSegmentSrv = uiSegmentSrv;
 
     this.target.region = this.target.region || SELECT_PLACEHOLDERS.REGION;
-    this.target.tenancyconfig = this.target.tenancyconfig || SELECT_PLACEHOLDERS.TENANCYCONFIG;
+    this.target.tenancy = this.target.tenancy || SELECT_PLACEHOLDERS.TENANCYCONFIG;
     this.target.compartment = this.target.compartment || SELECT_PLACEHOLDERS.COMPARTMENT;
     this.target.namespace = this.target.namespace || SELECT_PLACEHOLDERS.NAMESPACE;
     this.target.resourcegroup = this.target.resourcegroup || SELECT_PLACEHOLDERS.RESOURCEGROUP;
@@ -81,9 +81,9 @@ export class OCIDatasourceQueryCtrl extends QueryCtrl {
     });
   }
 
-  getTenancyConfig() {
-    return this.datasource.getTenancyConfig().then(tenancyconfig => {
-      return this.appendVariables([ ...tenancyconfig], tenancyconfigQueryRegex);
+  getTenancies() {
+    return this.datasource.getTenancies().then(tenancies => {
+      return this.appendVariables([ ...tenancies], tenanciesQueryRegex);
     });
   }
 
