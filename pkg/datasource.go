@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -878,11 +879,31 @@ func (p fileConfigurationProvider) OCIConfigParser(scope string) ([]string, erro
 	}
 
 	if _, ok := os.LookupEnv("OCI_CLI_CONFIG_FILE"); ok {
-		p.ConfigPath = os.Getenv("OCI_CLI_CONFIG_FILE")
+		oci_config_file = os.Getenv("OCI_CLI_CONFIG_FILE")
 	} else {
-		p.ConfigPath = homedir + "/.oci/config"
+		oci_config_file = homedir + "/.oci/config"
 	}
-	p.readAndParseConfigFile()
+
+	openConfigFile(oci_config_file)
+	file, err := os.Open(oci_config_file)
+	if err != nil {
+		return nil, errors.Wrap(err, "error opening file:"+oci_config_file)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	if err := scanner.Err(); err != nil {
+		return nil, errors.Wrap(err, "buffer error")
+	}
+
+	r, err := regexp.Compile(`\[.*\]`) // this can also be a regex
+	if err != nil {
+		return nil, errors.Wrap(err, "error in compiling regex")
+	}
+	r2, err := regexp.Compile(`region=`) // this can also be a regex
+	if err != nil {
+		return nil, errors.Wrap(err, "error in compiling regex")
+	}
 
 	if scope == "ociconfigs" {
 		for scanner.Scan() {
@@ -1140,7 +1161,7 @@ func openConfigFile(configFilePath string) (data []byte, err error) {
 	data, err = ioutil.ReadFile(expandedPath)
 	if err != nil {
 		err = fmt.Errorf("can not read config file: %s due to: %s", configFilePath, err.Error())
-		return nil, err
+		return nil,
 	}
 	return data, nil
 }
