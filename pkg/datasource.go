@@ -169,6 +169,8 @@ func (o *OCIDatasource) testResponse(ctx context.Context, req *backend.QueryData
 		return &backend.QueryDataResponse{}, err
 	}
 
+	frame := data.NewFrame(query.RefID, data.NewField("text", nil, []string{}))
+
 	regions, _ := OCIConfigParser("regions")
 	rr := 0
 	reg := common.StringToRegion(ts.Region)
@@ -194,13 +196,19 @@ func (o *OCIDatasource) testResponse(ctx context.Context, req *backend.QueryData
 		}
 		status := res.RawResponse.StatusCode
 		if status >= 200 && status < 300 {
-			// return &backend.QueryDataResponse{}, nil
-			o.logger.Error(key, "OK", status)
+			frame.AppendRow(fmt.Sprintf("%s=%d", key, status))
+			o.logger.Debug(key, "OK", status)
 		} else {
 			return nil, errors.Wrap(err, fmt.Sprintf("list metrircs failed %s %d", spew.Sdump(res), status))
 		}
 	}
-	return &backend.QueryDataResponse{}, nil
+	resp := backend.NewQueryDataResponse()
+	respD := resp.Responses[query.RefID]
+	respD.Frames = append(respD.Frames, frame)
+	resp.Responses[query.RefID] = respD
+	// return &backend.QueryDataResponse{}, nil
+	return resp, nil
+
 }
 
 func (o *OCIDatasource) dimensionResponse(ctx context.Context, req *backend.QueryDataRequest, takey string) (*backend.QueryDataResponse, error) {
