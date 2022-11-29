@@ -105,9 +105,6 @@ export default class OCIDatasource {
     })
       .then((response) => {
         if (response.status === 200) {
-          // window.alert([response.data]);
-          console.log(response)
-          alert("ciao");
           return {
             status: "success",
             message: "Data source is working",

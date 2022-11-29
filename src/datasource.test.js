@@ -117,6 +117,9 @@ describe('OCIDatasource', () => {
       const backendSrvMock = { datasourceRequest: jest.fn(() => Promise.resolve({ status: 200 })) }
       const myDS = new OCIDatasource(instanceSettings, null, backendSrvMock, templateSrvMock, timeSrvMock)
       return myDS.testDatasource().then((data) => {
+          window.alert([response.data]);
+          console.log(response)
+          alert("ciao");        
         expect(data).toEqual({ status: 'success', message: 'Data source is working', title: 'Success' })
         done()
       })
