@@ -119,6 +119,7 @@ func (o *OCIDatasource) QueryData(ctx context.Context, req *backend.QueryDataReq
 
 	o.logger.Debug("QueryData")
 	o.logger.Debug(ts.Environment)
+	o.logger.Debug(ts.TenancyOCID)
 	o.logger.Debug(ts.TenancyMode)
 	o.logger.Debug(ts.Region)
 	o.logger.Debug(ts.Tenancy)
@@ -139,7 +140,7 @@ func (o *OCIDatasource) QueryData(ctx context.Context, req *backend.QueryDataReq
 	if ts.TenancyMode == "multitenancy" {
 		takey = ts.Tenancy
 	} else {
-		takey = SingleTenancyKey
+		takey = SingleTenancyKey + ts.TenancyOCID
 	}
 
 	o.logger.Debug(takey)
@@ -364,6 +365,7 @@ func (o *OCIDatasource) getConfigProvider(environment string, tenancymode string
 			var configProvider common.ConfigurationProvider
 			// configProvider = common.DefaultConfigProvider()
 			configProvider = common.CustomProfileConfigProvider(oci_config_file, "DEFAULT")
+			tenancyocid, err := configProvider.TenancyOCID()
 			metricsClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(configProvider)
 			if err != nil {
 				o.logger.Error("Error with config:" + SingleTenancyKey)
@@ -374,12 +376,13 @@ func (o *OCIDatasource) getConfigProvider(environment string, tenancymode string
 				o.logger.Error("Error creating identity client", "error", err)
 				return errors.Wrap(err, "Error creating identity client")
 			}
-			o.tenancyAccess[SingleTenancyKey] = &TenancyAccess{metricsClient, identityClient, configProvider}
+			o.tenancyAccess[SingleTenancyKey+tenancyocid] = &TenancyAccess{metricsClient, identityClient, configProvider}
 			return nil
 		}
 	case "OCI Instance":
 		var configProvider common.ConfigurationProvider
 		configProvider, err := auth.InstancePrincipalConfigurationProvider()
+		tenancyocid, err := configProvider.TenancyOCID()
 		if err != nil {
 			return errors.New(fmt.Sprint("error with instance principals", spew.Sdump(configProvider), err.Error()))
 		}
@@ -393,7 +396,7 @@ func (o *OCIDatasource) getConfigProvider(environment string, tenancymode string
 			o.logger.Error("Error creating identity client", "error", err)
 			return errors.Wrap(err, "Error creating identity client")
 		}
-		o.tenancyAccess[SingleTenancyKey] = &TenancyAccess{metricsClient, identityClient, configProvider}
+		o.tenancyAccess[SingleTenancyKey+tenancyocid] = &TenancyAccess{metricsClient, identityClient, configProvider}
 		return nil
 
 	default:
@@ -635,7 +638,7 @@ func (o *OCIDatasource) queryResponse(ctx context.Context, req *backend.QueryDat
 		if ts.TenancyMode == "multitenancy" {
 			takey = ts.Tenancy
 		} else {
-			takey = SingleTenancyKey
+			takey = SingleTenancyKey + ts.TenancyOCID
 		}
 
 		reg := common.StringToRegion(ts.Region)
