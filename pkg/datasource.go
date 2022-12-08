@@ -490,7 +490,7 @@ func (o *OCIDatasource) compartmentsResponse(ctx context.Context, req *backend.Q
 	log.DefaultLogger.Debug(takey)
 
 	var tenancyocid string
-	if ts.TenancyMode == "multitenancy" && takey != "" {
+	if ts.TenancyMode == "multitenancy" && (takey != "" || takey == "NoTenancy") {
 		res := strings.Split(takey, "/")
 		tenancyocid = res[1]
 	} else {
