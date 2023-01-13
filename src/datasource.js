@@ -32,6 +32,7 @@ export default class OCIDatasource {
     this.name = instanceSettings.name;
     this.id = instanceSettings.id;
     this.tenancyOCID = instanceSettings.jsonData.tenancyOCID;
+    this.OCIConfig = instanceSettings.jsonData.OCIConfig;
     this.defaultRegion = instanceSettings.jsonData.defaultRegion;
     this.environment = instanceSettings.jsonData.environment;
     this.tenancymode = instanceSettings.jsonData.tenancymode;
@@ -93,6 +94,7 @@ export default class OCIDatasource {
           queryType: "test",
           region: this.defaultRegion,
           tenancyOCID: this.tenancyOCID,
+          OCIConfig: this.OCIConfig,
           compartment: "",
           environment: this.environment,
           tenancymode: this.tenancymode,
@@ -161,6 +163,7 @@ export default class OCIDatasource {
           tenancymode: this.tenancymode,
           datasourceId: this.id,
           tenancyOCID: this.tenancyOCID,
+          OCIConfig: this.OCIConfig,
           queryType: "search",
           region: _.isEmpty(region) ? this.defaultRegion : region,
           compartment: compartmentId,
@@ -293,6 +296,7 @@ export default class OCIDatasource {
         tenancymode: this.tenancymode,
         datasourceId: this.id,
         tenancyOCID: this.tenancyOCID,
+        OCIConfig: this.OCIConfig,
         queryType: "query",
         refId: t.refId,
         hide: t.hide,
@@ -614,6 +618,7 @@ export default class OCIDatasource {
           tenancymode: this.tenancymode,
           datasourceId: this.id,
           tenancyOCID: this.tenancyOCID,
+          OCIConfig: this.OCIConfig,
           tenancy: _.isEmpty(tenancy) ? "" : tenancy,
           queryType: "regions",
         },
@@ -635,6 +640,7 @@ export default class OCIDatasource {
         {
           environment: this.environment,
           tenancymode: this.tenancymode,
+          OCIConfig: this.OCIConfig,
           datasourceId: this.id,
           queryType: "tenancies",
         },
@@ -663,6 +669,7 @@ export default class OCIDatasource {
           tenancymode: this.tenancymode,
           datasourceId: this.id,
           tenancyOCID: this.tenancyOCID,
+          OCIConfig: this.OCIConfig,
           tenancy: _.isEmpty(tenancy) ? "" : tenancy,
           queryType: "compartments",
           region: _.isEmpty(region) ? this.defaultRegion : region,
@@ -709,6 +716,7 @@ export default class OCIDatasource {
           tenancymode: this.tenancymode,
           datasourceId: this.id,
           tenancyOCID: this.tenancyOCID,
+          OCIConfig: this.OCIConfig,
           queryType: "namespaces",
           region: _.isEmpty(region) ? this.defaultRegion : region,
           compartment: compartmentId,
@@ -750,6 +758,7 @@ export default class OCIDatasource {
           tenancymode: this.tenancymode,
           datasourceId: this.id,
           tenancyOCID: this.tenancyOCID,
+          OCIConfig: this.OCIConfig,
           queryType: "resourcegroups",
           region: _.isEmpty(region) ? this.defaultRegion : region,
           compartment: compartmentId,
@@ -812,6 +821,7 @@ export default class OCIDatasource {
             tenancymode: this.tenancymode,
             datasourceId: this.id,
             tenancyOCID: this.tenancyOCID,
+            OCIConfig: this.OCIConfig,
             queryType: "dimensions",
             region: _.isEmpty(region) ? this.defaultRegion : region,
             compartment: compartmentId,

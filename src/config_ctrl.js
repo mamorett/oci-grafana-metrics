@@ -12,19 +12,20 @@ export class OCIConfigCtrl {
     this.defaultRegion = this.current.jsonData.defaultRegion
     this.environment = this.current.jsonData.environment      
     this.tenancymode = this.current.jsonData.tenancymode
+    this.OCIConfig = this.current.jsonData.OCIConfig
   }
 
-  getRegions () {
+  getRegions() {
     return regions
   }
 
-  getEnvironments () { 
+  getEnvironments() { 
     return environments
   }
 
-  getTenancyModes () { 
+  getTenancyModes() { 
     return tenancymodes
-  }   
+  }  
 
 }
 
