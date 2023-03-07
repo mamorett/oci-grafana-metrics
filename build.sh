@@ -16,6 +16,7 @@ rm ./plugin.tar
 mage --debug -v
 
 cp LICENSE.txt ./dist/LICENSE
+sed -i '' '/sourceMappingURL=module.js.map/d' ./dist/module.js
 
 # npx @grafana/sign-plugin
 
