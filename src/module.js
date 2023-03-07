@@ -13,4 +13,3 @@ class OCIAnnotationsQueryCtrl {}
 OCIAnnotationsQueryCtrl.templateUrl = 'partials/annotations.editor.html';
 
 export { OCIDatasource as Datasource, OCIDatasourceQueryCtrl as QueryCtrl, OCIConfigCtrl as ConfigCtrl, OCIQueryOptionsCtrl as QueryOptionsCtrl, OCIAnnotationsQueryCtrl as AnnotationsQueryCtrl };
-//# sourceMappingURL=module.js.map

@@ -17,7 +17,7 @@ mage --debug -v
 
 cp LICENSE.txt ./dist/LICENSE
 
-#grafana-toolkit plugin:sign
+# npx @grafana/sign-plugin
 
 mv ./dist ./oci-metrics-datasource
 tar cvf plugin.tar ./oci-metrics-datasource
