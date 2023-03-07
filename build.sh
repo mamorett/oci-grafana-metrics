@@ -15,7 +15,7 @@ rm ./plugin.tar
 
 mage --debug -v
 
-cp LICENSE.txt ./dist
+cp LICENSE.txt ./dist/LICENSE
 
 #grafana-toolkit plugin:sign
 
