@@ -68,6 +68,7 @@ export const QueryEditor: React.FC<Props> = (props) => {
   const init = () => {
     let initialDimensions: any = [];
     let initialTags: any = [];
+    console.log("checkpoint 1")
 
     if (query.dimensionValues !== undefined && query.dimensionValues?.length > 0) {
       for (const eachDimension of query.dimensionValues) {
@@ -94,6 +95,7 @@ export const QueryEditor: React.FC<Props> = (props) => {
         });
       }
     }
+    console.log("checkpoint 2")
 
     return [initialDimensions, initialTags];
   };
@@ -496,6 +498,8 @@ export const QueryEditor: React.FC<Props> = (props) => {
   }
 
   // set compartmentName in case dashboard was created with version 4.x
+  console.log("checkpoint 3")
+
   if (!query.compartmentName && query.compartment && !hasLegacyCompartment) {
     if (!query.tenancy && tmode === TenancyChoices.multitenancy) {
       return null;
@@ -516,13 +520,19 @@ export const QueryEditor: React.FC<Props> = (props) => {
       }
       setCompartmentValue(query.compartmentName);
       setHasLegacyCompartment(true);
+      console.log("checkpoint 4")
+
     });
+    console.log("checkpoint 5")
+
 }
 
   // set queryRawValue in case dashboard was created with version <= 5.0.0
   if (query.rawQuery === undefined && !hasLegacyRawValue) {
     setQueryRawValue(true);
-    setHasLegacyRawValue(true);    
+    setHasLegacyRawValue(true);
+    console.log("checkpoint 6")
+  
 }
 
   return (        
