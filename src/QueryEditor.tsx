@@ -11,9 +11,31 @@ import { OCIDataSource } from './datasource';
 import { OCIDataSourceOptions, AggregationOptions, IntervalOptions, OCIQuery, QueryPlaceholder } from './types';
 import QueryModel from './query_model';
 import { TenancyChoices } from './config.options';
+import uPlot, {Scale} from uplot
 
 type Props = QueryEditorProps<OCIDataSource, OCIQuery, OCIDataSourceOptions>;
+// export const uPlotDefaultOptions: uPlot.Options = {
+//   title: '* use ctrl + scroll to zoom, double click to reset scale',
+//   width: window.innerWidth - 48,
+//   height: 600,
+//   class: 'mb-3',
+//   series: [{label: 'Timestamp'}],
+//   axes: [{}],
+//   // min: null,
+//   // max: null,
+//   // tzDate: ts => new Date(getUTCDateFromLocal(ts * 1000)),
+//   // fmtDate: tpl => uPlot.fmtDate(fixUplotDateTimeTemplate(tpl)),
+// };
+export const uPlotDefaultOptions: uPlot.Scales = {
+  xScaleKey: 0,
+  yScaleKey: 0,
+};
 
+// export const uPlotDefaultOptions: uPlot.Scale =
+// {
+//   min: 0,
+//   max: 0,
+// }
 
 export const QueryEditor: React.FC<Props> = (props) => {
   const { query, datasource, onChange, onRunQuery } = props;
@@ -40,6 +62,8 @@ export const QueryEditor: React.FC<Props> = (props) => {
   
 
   const onApplyQueryChange = (changedQuery: OCIQuery, runQuery = true) => {
+    console.log("checkpoint AQ "+runQuery)
+
     if (runQuery) {        
       const queryModel = new QueryModel(changedQuery, getTemplateSrv());
       // for metrics
@@ -499,6 +523,8 @@ export const QueryEditor: React.FC<Props> = (props) => {
 
   // set compartmentName in case dashboard was created with version 4.x
   console.log("checkpoint 3")
+
+  // uPlot.Scale.setScale('x', {min: null, max: null})
 
   if (!query.compartmentName && query.compartment && !hasLegacyCompartment) {
     if (!query.tenancy && tmode === TenancyChoices.multitenancy) {

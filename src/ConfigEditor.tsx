@@ -517,9 +517,9 @@ export class ConfigEditor extends PureComponent<Props, State> {
               label="Fingerprint"
               labelWidth={28}
               tooltip="Fingerprint"
-              placeholder={options.secureJsonFields.fingerprint4 ? 'configured' : ''}
             >
               <Input
+                placeholder={options.secureJsonFields.fingerprint4 ? 'configured' : ''}
                 className="width-30"
                 onChange={onUpdateDatasourceSecureJsonDataOption(this.props, 'fingerprint4')}
                 />
@@ -591,9 +591,9 @@ export class ConfigEditor extends PureComponent<Props, State> {
               label="User OCID"
               labelWidth={28}
               tooltip="User OCID"
-              placeholder={options.secureJsonFields.user5 ? 'configured' : ''}
             >
               <Input
+                placeholder={options.secureJsonFields.user5 ? 'configured' : ''}
                 className="width-30"
                 onChange={onUpdateDatasourceSecureJsonDataOption(this.props, 'user5')}
                 />
