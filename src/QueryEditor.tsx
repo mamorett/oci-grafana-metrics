@@ -10,20 +10,19 @@ import { getTemplateSrv } from '@grafana/runtime';
 import { OCIDataSource } from './datasource';
 import { OCIDataSourceOptions, AggregationOptions, IntervalOptions, OCIQuery, QueryPlaceholder } from './types';
 import QueryModel from './query_model';
-import { TenancyChoices } from './config.options';
+// import { TenancyChoices } from './config.options';
 
 type Props = QueryEditorProps<OCIDataSource, OCIQuery, OCIDataSourceOptions>;
 
 
 export const QueryEditor: React.FC<Props> = (props) => {
   const { query, datasource, onChange, onRunQuery } = props;
-  const tmode = datasource.getJsonData().tenancymode;
   const [hasLegacyCompartment, setHasLegacyCompartment] = useState(false);
   const [hasLegacyRawValue, setHasLegacyRawValue] = useState(false);
-  const [hasLegacyTenancy, setHasLegacyTenancy] = useState(false);
+  // const [hasLegacyTenancy, setHasLegacyTenancy] = useState(false);
   const [queryValue, setQueryValue] = useState(query.queryTextRaw);
   const [queryRawValue, setQueryRawValue] = useState(query.rawQuery);
-  const [tenancyValue, setTenancyValue] = useState(query.tenancyName);
+  // const [tenancyValue, setTenancyValue] = useState(query.tenancyName);
   const [regionValue, setRegionValue] = useState(query.region);
   const [compartmentValue, setCompartmentValue] = useState(query.compartmentName);
   const [namespaceValue, setNamespaceValue] = useState(query.namespace);
@@ -135,21 +134,21 @@ export const QueryEditor: React.FC<Props> = (props) => {
   };
 
   // fetch the tenancies, with name as key and ocid as value
-  const getTenancyOptions = async () => {
-    let options: Array<SelectableValue<string>> = [];
-    options = addTemplateVariablesToOptions(options)
-    const response = await datasource.getTenancies();
-    if (response) {
-      response.forEach((item: any) => {
-        const sv: SelectableValue<string> = {
-          label: item.name,
-          value: item.ocid,
-        };
-        options.push(sv);
-      });
-    }
-    return options;
-  };
+  // const getTenancyOptions = async () => {
+  //   let options: Array<SelectableValue<string>> = [];
+  //   options = addTemplateVariablesToOptions(options)
+  //   const response = await datasource.getTenancies();
+  //   if (response) {
+  //     response.forEach((item: any) => {
+  //       const sv: SelectableValue<string> = {
+  //         label: item.name,
+  //         value: item.ocid,
+  //       };
+  //       options.push(sv);
+  //     });
+  //   }
+  //   return options;
+  // };
 
   const getCompartmentOptions = async () => {
       let options: Array<SelectableValue<string>> = [];
@@ -332,22 +331,22 @@ export const QueryEditor: React.FC<Props> = (props) => {
   // };
 
 
-  const onTenancyChange = async (data: any) => {
-    setTenancyValue(data);
-    onApplyQueryChange(
-      {
-        ...query,
-        tenancyName: data.label,
-        tenancy: data.value,
-        compartmentName: undefined,
-        compartment: undefined,
-        region: undefined,
-        namespace: undefined,
-        metric: undefined,
-      },
-      false
-    );
-  };
+  // const onTenancyChange = async (data: any) => {
+  //   setTenancyValue(data);
+  //   onApplyQueryChange(
+  //     {
+  //       ...query,
+  //       tenancyName: data.label,
+  //       tenancy: data.value,
+  //       compartmentName: undefined,
+  //       compartment: undefined,
+  //       region: undefined,
+  //       namespace: undefined,
+  //       metric: undefined,
+  //     },
+  //     false
+  //   );
+  // };
 
   const onRawQueryChange = (data: boolean) => {
     setQueryRawValue(data);   
@@ -485,17 +484,14 @@ export const QueryEditor: React.FC<Props> = (props) => {
   // };
 
   // set tenancyName in case dashboard was created with version 4.x
-  if (query.tenancy && !hasLegacyTenancy && !query.tenancyName) {
-      query.tenancyName = query.tenancy;  
-      setTenancyValue(query.tenancy);
-      setHasLegacyTenancy(true);
-  }
+  // if (query.tenancy && !hasLegacyTenancy && !query.tenancyName) {
+  //     query.tenancyName = query.tenancy;  
+  //     setTenancyValue(query.tenancy);
+  //     setHasLegacyTenancy(true);
+  // }
 
   // set compartmentName in case dashboard was created with version 4.x
   if (!query.compartmentName && query.compartment && !hasLegacyCompartment) {
-    if (!query.tenancy && tmode === TenancyChoices.multitenancy) {
-      return null;
-    }
     datasource.getCompartments(query.tenancy).then(response => {
       if (response) {
         let found = false;
@@ -525,7 +521,7 @@ export const QueryEditor: React.FC<Props> = (props) => {
     <>
       <FieldSet>
         <InlineFieldRow>
-          {tmode === TenancyChoices.multitenancy && (
+          {/* {tmode === TenancyChoices.multitenancy && (
             <>
               <InlineField label="TENANCY" labelWidth={20}>
                 <SegmentAsync
@@ -542,13 +538,13 @@ export const QueryEditor: React.FC<Props> = (props) => {
               </InlineField>
             </>
           )}
-          {tmode === TenancyChoices.single && (
+          {tmode === TenancyChoices.single && ( */}
             <>
         <InlineField label="TENANCY" labelWidth={20}>
           <CustomInput className="width-14" value={"DEFAULT/"} readOnly />
         </InlineField>
             </>
-          )}
+          {/* )} */}
         <InlineField grow={true} className='container text-right'>
           <RadioButtonGroup
             options={editorModes}

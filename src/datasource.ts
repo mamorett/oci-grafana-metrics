@@ -4,8 +4,8 @@
 */
 
 import _,{ isString} from 'lodash';
-import { DataSourceInstanceSettings, ScopedVars, MetricFindValue } from '@grafana/data';
-import { DataSourceWithBackend, getTemplateSrv } from '@grafana/runtime';
+import { DataSourceInstanceSettings, ScopedVars, MetricFindValue, DataSourceApi, DataQueryRequest, DataQueryResponse } from '@grafana/data';
+import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import {
   OCIResourceItem,
   OCINamespaceWithMetricNamesItem,
@@ -29,15 +29,49 @@ import {
   SetAutoInterval,
 } from "./types";
 import QueryModel from './query_model';
+import { Observable } from 'rxjs';
+import * as identity from "oci-identity";
+import * as common from "oci-common";
 
-export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSourceOptions> {
+export class OCIDataSource extends DataSourceApi<OCIQuery, OCIDataSourceOptions> {
+
   private jsonData: any;
-  ocidCompartmentStore: Record<string, string> ={}
-
+  url?: string;
   constructor(instanceSettings: DataSourceInstanceSettings<OCIDataSourceOptions>) {
     super(instanceSettings);
-    this.jsonData = instanceSettings.jsonData;
+
+    this.url = instanceSettings.url;
+    console.log("URLAOOOOOOOOOOOOOOO" +this.url)
+    
   }
+  
+  ocidCompartmentStore: Record<string, string> ={}
+  query(request: DataQueryRequest<OCIQuery>): Promise<DataQueryResponse> | Observable<DataQueryResponse> {
+    console.log("URLAOOOOOOOOOOOOOOO" +this.url)
+    throw new Error('Method not implemented.');
+  }
+  testDatasource(): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
+  async doRequest(query: OCIQuery) {
+    const result = await getBackendSrv().datasourceRequest({
+      method: 'GET',
+      url: this.url + '/example',
+      params: query,
+    });
+
+    return result;
+}
+
+// export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSourceOptions> {
+//   private jsonData: any;
+//   ocidCompartmentStore: Record<string, string> ={}
+
+//   constructor(instanceSettings: DataSourceInstanceSettings<OCIDataSourceOptions>) {
+//     super(instanceSettings);
+//     this.jsonData = instanceSettings.jsonData;
+//   }
  
 
   /**
@@ -140,7 +174,6 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
 
   async metricFindQuery?(query: any, options?: any): Promise<MetricFindValue[]> {
     const templateSrv = getTemplateSrv();
-
     const tenancyQuery = query.match(tenanciesQueryRegex);
     if (tenancyQuery) {
       const tenancy = await this.getTenancies();
@@ -150,51 +183,25 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
     }    
 
     const regionQuery = query.match(regionsQueryRegex);
-    if (regionQuery) {
-      if (this.jsonData.tenancymode === "multitenancy") {
-        const tenancy = templateSrv.replace(regionQuery[1]);
-        const regions = await this.getSubscribedRegions(tenancy);
-        return regions.map(n => {
-          return { text: n, value: n };
-        });
-      } else {     
+    if (regionQuery) {    
         const regions = await this.getSubscribedRegions(DEFAULT_TENANCY);
         return regions.map(n => {
           return { text: n, value: n };
         });       
-      }
     }
 
     const compartmentQuery = query.match(compartmentsQueryRegex);
     if (compartmentQuery){
-      if (this.jsonData.tenancymode === "multitenancy") {
-        const tenancy = templateSrv.replace(compartmentQuery[1]);
-        const compartments = await this.getCompartments(tenancy);
-        return compartments.map(n => {
-          this.ocidCompartmentStore[n.name]=n.ocid; 
-          return { text: n.name, value: n.name };
-        });
-      } else {
         const compartments = await this.getCompartments(DEFAULT_TENANCY);
         return compartments.map(n => {
           this.ocidCompartmentStore[n.name]=n.ocid; 
           return { text: n.name, value: n.name };
         }); 
-      }   
     }    
 
 
     const namespaceQuery = query.match(namespacesQueryRegex);
     if (namespaceQuery) {
-      if (this.jsonData.tenancymode === "multitenancy") {
-        const tenancy = templateSrv.replace(namespaceQuery[1]);
-        const region = templateSrv.replace(namespaceQuery[2]);
-        const compartment = templateSrv.replace(namespaceQuery[3], undefined, this.compartmentFormatter);
-        const namespaces = await this.getNamespacesWithMetricNames(tenancy, compartment, region);
-        return namespaces.map(n => {
-          return { text: n.namespace, value: n.namespace };
-        });        
-      } else {
         const tenancy = DEFAULT_TENANCY;
         const region = templateSrv.replace(namespaceQuery[1]);
         const compartment = templateSrv.replace(namespaceQuery[2], undefined, this.compartmentFormatter);
@@ -202,21 +209,10 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
         return namespaces.map(n => {
           return { text: n.namespace, value: n.namespace };
         });      
-      }
     }
 
     let resourcegroupQuery = query.match(resourcegroupsQueryRegex);
     if (resourcegroupQuery) {
-      if (this.jsonData.tenancymode === "multitenancy") {
-        const tenancy = templateSrv.replace(resourcegroupQuery[1]);
-        const region = templateSrv.replace(resourcegroupQuery[2]);
-        const compartment = templateSrv.replace(resourcegroupQuery[3], undefined, this.compartmentFormatter);
-        const namespace = templateSrv.replace(resourcegroupQuery[4]);
-        const resource_group = await this.getResourceGroupsWithMetricNames(tenancy, compartment, region, namespace);
-        return resource_group.map(n => {
-          return { text: n.resource_group, value: n.resource_group };
-        });
-      } else {
         const tenancy = DEFAULT_TENANCY;
         const region = templateSrv.replace(resourcegroupQuery[1]);
         const compartment = templateSrv.replace(resourcegroupQuery[2], undefined, this.compartmentFormatter);
@@ -225,24 +221,10 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
         return resource_group.map(n => {
           return { text: n.resource_group, value: n.resource_group };
         });     
-      }
     }
 
     const metricQuery = query.match(metricsQueryRegex);
     if (metricQuery) {
-      if (this.jsonData.tenancymode === "multitenancy") {
-        const tenancy = templateSrv.replace(metricQuery[1]);
-        const region = templateSrv.replace(metricQuery[2]);
-        const compartment = templateSrv.replace(metricQuery[3], undefined, this.compartmentFormatter);
-        const namespace = templateSrv.replace(metricQuery[4]);
-        // const resourcegroup = templateSrv.replace(metricQuery[4]);
-        const metric_names = await this.getResourceGroupsWithMetricNames(tenancy, compartment, region, namespace);
-        return metric_names.flatMap(n => {
-          return n.metric_names.map(name => {
-            return { text: name, value: name };
-          });
-        });        
-      } else {
         const tenancy = DEFAULT_TENANCY;
         const region = templateSrv.replace(metricQuery[1]);
         const compartment = templateSrv.replace(metricQuery[2], undefined, this.compartmentFormatter);
@@ -254,24 +236,10 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
             return { text: name, value: name };
           });
         });       
-      }  
     }    
 
     const dimensionsQuery = query.match(dimensionQueryRegex);
     if (dimensionsQuery) {
-      if (this.jsonData.tenancymode === "multitenancy") {
-        const tenancy = templateSrv.replace(dimensionsQuery[1]);
-        const region = templateSrv.replace(dimensionsQuery[2]);
-        const compartment = templateSrv.replace(dimensionsQuery[3], undefined, this.compartmentFormatter);
-        const namespace = templateSrv.replace(dimensionsQuery[4]);
-        const metric = templateSrv.replace(dimensionsQuery[5]);
-        const dimension_values = await this.getDimensions(tenancy, compartment, region, namespace, metric);
-        return dimension_values.flatMap(res => {
-          return res.values.map(val => {
-              return { text: res.key + ' - ' + val, value: res.key + '="' + val + '"' };
-          });
-        }); 
-      } else {
         const tenancy = DEFAULT_TENANCY;
         const region = templateSrv.replace(dimensionsQuery[1]);
         const compartment = templateSrv.replace(dimensionsQuery[2], undefined, this.compartmentFormatter);
@@ -283,9 +251,7 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
               return { text: res.key + ' - ' + val, value: res.key + '="' + val + '"' };
           });
         }); 
-      }      
     } 
-
     return [];
   }
 
@@ -329,11 +295,16 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
 
   // main caller to call resource handler for get call
   async getResource(path: string): Promise<any> {
-    return super.getResource(path);
+    return getBackendSrv().fetch({
+      method: 'GET',
+      url: path,
+      params: this.query,
+    });
   }
   // main caller to call resource handler for post call
   async postResource(path: string, body: any): Promise<any> {
-    return super.postResource(path, body);
+    // return super.postResource(path, body); 
+    return getBackendSrv().post(path, body);
   }
 
 
@@ -356,9 +327,24 @@ export class OCIDataSource extends DataSourceWithBackend<OCIQuery, OCIDataSource
     const reqBody: JSON = {
       tenancy: tenancy,
     } as unknown as JSON;
-    return this.postResource(OCIResourceCall.Regions, reqBody).then((response) => {
+
+    // Build authentication provider using instance principal
+    const authenticationProvider = await new common.InstancePrincipalsAuthenticationDetailsProviderBuilder().build();
+ 
+ 
+    // Initialize the identity and monitoring clients
+    const identityClient = new identity.IdentityClient({ authenticationDetailsProvider: authenticationProvider });
+ 
+ 
+    // Fetch and print regions
+    const regions = await identityClient.listRegions({});
+    console.log("Regions: ", JSON.stringify(regions));    
+    return this.postResource("https://identity.us-phoenix-1.oci.oraclecloud.com/20160918/regions", reqBody).then((response) => {
       return new ResponseParser().parseRegions(response);
-    });
+    });    
+    // return this.postResource(OCIResourceCall.Regions, reqBody).then((response) => {
+    //   return new ResponseParser().parseRegions(response);
+    // });
   }
 
   async getCompartments(tenancy: string): Promise<OCIResourceItem[]> {

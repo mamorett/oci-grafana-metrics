@@ -6,6 +6,12 @@
   "annotations": false,
   "alerting": true,
   "backend": true,
+  "routes": [
+    {
+      "path": "example",
+      "url": "https://login.devops.us-ashburn-1.oci.oraclecorp.com/v1"
+    }
+  ],  
   "executable": "oci-metrics-plugin",
   "info": {
     "description": "Oracle Cloud Infrastructure Metrics Data Source for Grafana",
