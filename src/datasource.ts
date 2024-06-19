@@ -33,6 +33,10 @@ import { Observable } from 'rxjs';
 import * as identity from "oci-identity";
 import * as common from "oci-common";
 
+export interface RegionsByRealm {
+  [realm: string]: string;
+}
+
 export class OCIDataSource extends DataSourceApi<OCIQuery, OCIDataSourceOptions> {
 
   private jsonData: any;
@@ -292,6 +296,7 @@ export class OCIDataSource extends DataSourceApi<OCIQuery, OCIDataSourceOptions>
     return !!varNames.find((item) => item === varName);
   }
 
+  
 
   // main caller to call resource handler for get call
   async getResource(path: string): Promise<any> {
@@ -335,6 +340,35 @@ export class OCIDataSource extends DataSourceApi<OCIQuery, OCIDataSourceOptions>
     // Initialize the identity and monitoring clients
     const identityClient = new identity.IdentityClient({ authenticationDetailsProvider: authenticationProvider });
  
+    const createRealmConfig = async (realm: string) => {
+      // const baseUrl = regionsByRealm[realm];
+      const baseUrl = "us-phoenix-1.oci.oraclecloud.com";
+      const isOc1 = realm.toLowerCase() === 'oc1';
+      const loginServiceUrl = isOc1
+        ? await urlProvider.getUrl()
+        : `https://login.${baseUrl}/v1`;
+      const getRedirectUrlOverride: GetRedirectUrl = () => {
+        const url: URL = new URL(window.location.href);
+    
+        // So that `/iframe.html` is included in the redirect uri.
+        return url.href;
+      };
+      const soupParameters = {
+        provider: 'ocna-saml',
+        tenant: 'bmc_operator_access',
+        noGlobalRedirect: isOc1 && !loginServiceUrl.includes('login.oci'),
+      };
+    
+      return {
+        getRedirectUrlOverride,
+        realm,
+        authorizationServiceUrl: () => `https://auth.${baseUrl}/v1`,
+        landingUrl: window.location.origin,
+        identityServiceUrl: `https://identity.${baseUrl}/20160918`,
+        loginServiceUrl,
+        soupParameters,
+      };
+    };
  
     // Fetch and print regions
     const regions = await identityClient.listRegions({});
